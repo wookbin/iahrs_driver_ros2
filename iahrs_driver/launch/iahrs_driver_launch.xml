@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="iahrs_driver" exec="iahrs_driver" name="iahrs_driver" output="screen" />
+</launch>
