@@ -27,7 +27,7 @@
 #include "interfaces/srv/imu_reset.hpp"
 
 
-#define SERIAL_PORT		"/dev/IMU"
+#define SERIAL_PORT	"/dev/IMU"
 #define SERIAL_SPEED	B115200
 
 typedef struct IMU_DATA
@@ -72,7 +72,7 @@ public:
 
 		//Service ListUp
 		euler_angle_reset_srv_ = create_service<interfaces::srv::ImuReset>(
-        "all_data_reset", 
+        	"all_data_reset", 
 		std::bind(&IAHRS::Euler_angle_reset_callback, this, std::placeholders::_1, std::placeholders::_2));
 
 	}
@@ -89,7 +89,8 @@ public:
 		printf ("Try to open serial: %s\n", SERIAL_PORT); 
 
 		serial_fd = open(SERIAL_PORT, O_RDWR|O_NOCTTY);
-		if (serial_fd < 0) {
+		if (serial_fd < 0) 
+		{
 			printf ("Error unable to open %s\n", SERIAL_PORT);
 			return -1;
 		}
@@ -142,7 +143,8 @@ public:
 
 		unsigned long time_start = GetTickCount();
 
-		while (recv_len < buff_size) {
+		while (recv_len < buff_size) 
+		{
 			int n = read (serial_fd, recv_buff + recv_len, buff_size - recv_len);
 			if (n < 0) 
 			{
@@ -177,7 +179,8 @@ public:
 			}
 		}
 
-		if (strncmp(command, recv_buff, command_len - 1) == 0) {
+		if (strncmp(command, recv_buff, command_len - 1) == 0) 
+		{
 			if (recv_buff[command_len - 1] == '=') {
 				int data_count = 0;
 
@@ -257,16 +260,16 @@ int main (int argc, char** argv)
 	iahrs.SendRecv("za\n", dSend_Data, 10);	// Euler Angle -> '0.0' Reset
 	usleep(10000);
 	printf("                       | Z axis \n");
-    printf("                       | \n");
-    printf("                       |   / X axis \n");
-    printf("                   ____|__/____ \n");
-    printf("      Y axis     / *   | /    /| \n");
-    printf("      _________ /______|/    // \n");
-    printf("               /___________ // \n");
-    printf("              |____iahrs___|/ \n");
+	printf("                       | \n");
+	printf("                       |   / X axis \n");
+	printf("                   ____|__/____ \n");
+	printf("      Y axis     / *   | /    /| \n");
+	printf("      _________ /______|/    // \n");
+	printf("               /___________ // \n");
+	printf("              |____iahrs___|/ \n");
 
 	while(rclcpp::ok())
-    {
+    	{
 		rclcpp::spin_some(node);
 		if (serial_fd >= 0) 
 		{
