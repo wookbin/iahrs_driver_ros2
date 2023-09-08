@@ -1,3 +1,6 @@
 <launch>
-  <node pkg="iahrs_driver" exec="iahrs_driver" name="iahrs_driver" output="screen" />
+  <node pkg="iahrs_driver" exec="iahrs_driver" name="iahrs_driver" output="screen">
+    <param name="m_bSingle_TF_option" value="true"/>
+   </node>
+    
 </launch>
