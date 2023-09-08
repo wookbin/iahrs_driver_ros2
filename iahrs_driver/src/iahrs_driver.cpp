@@ -75,6 +75,12 @@ public:
         	"all_data_reset", 
 		std::bind(&IAHRS::Euler_angle_reset_callback, this, std::placeholders::_1, std::placeholders::_2));
 
+		//PARAM
+		this->declare_parameter("m_bSingle_TF_option");
+		m_bSingle_TF_option_param = this->get_parameter("m_bSingle_TF_option");
+		//Get Param
+		m_bSingle_TF_option = m_bSingle_TF_option_param.as_bool();
+
 	}
 
 	////value//////////////////////////////////////////////////////////////////////////////
@@ -82,6 +88,7 @@ public:
 	geometry_msgs::msg::TransformStamped transformStamped;
 	sensor_msgs::msg::Imu imu_data_msg;
 	rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_data_pub;
+	rclcpp::Parameter m_bSingle_TF_option_param;
 
 	////function//////////////////////////////////////////////////////////////////////////////
 	int serial_open ()
