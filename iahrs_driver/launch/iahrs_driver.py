@@ -12,11 +12,18 @@ from launch_ros.actions import Node
 # this is the function launch  system will look for
 def generate_launch_description():
 
+    iahrs_driver_node = Node(
+        package='iahrs_driver', 
+        executable='iahrs_driver',
+        output='screen',
+        parameters=[
+            {"m_bSingle_TF_option": True}
+        ]
+    )
+
     # create and return launch description object
     return LaunchDescription(
         [
-            ExecuteProcess(
-                cmd=["ros2", "run", "iahrs_driver", "iahrs_driver"], output="screen"
-            ),
+            iahrs_driver_node
         ]
     )
