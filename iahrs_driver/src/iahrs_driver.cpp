@@ -248,23 +248,22 @@ int main (int argc, char** argv)
 	// Create a function for when messages are to be sent.
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	auto node = std::make_shared<IAHRS>();
-	IAHRS iahrs;
 
 	// These values do not need to be converted
-	iahrs.imu_data_msg.linear_acceleration_covariance[0] = 0.0064;
-	iahrs.imu_data_msg.linear_acceleration_covariance[4] = 0.0063;
-	iahrs.imu_data_msg.linear_acceleration_covariance[8] = 0.0064;
-	iahrs.imu_data_msg.angular_velocity_covariance[0] = 0.032*(M_PI/180.0);
-	iahrs.imu_data_msg.angular_velocity_covariance[4] = 0.028*(M_PI/180.0);
-	iahrs.imu_data_msg.angular_velocity_covariance[8] = 0.006*(M_PI/180.0);
-	iahrs.imu_data_msg.orientation_covariance[0] = 0.013*(M_PI/180.0);
-	iahrs.imu_data_msg.orientation_covariance[4] = 0.011*(M_PI/180.0);
-	iahrs.imu_data_msg.orientation_covariance[8] = 0.006*(M_PI/180.0);
+	node->imu_data_msg.linear_acceleration_covariance[0] = 0.0064;
+	node->imu_data_msg.linear_acceleration_covariance[4] = 0.0063;
+	node->imu_data_msg.linear_acceleration_covariance[8] = 0.0064;
+	node->imu_data_msg.angular_velocity_covariance[0] = 0.032*(M_PI/180.0);
+	node->imu_data_msg.angular_velocity_covariance[4] = 0.028*(M_PI/180.0);
+	node->imu_data_msg.angular_velocity_covariance[8] = 0.006*(M_PI/180.0);
+	node->imu_data_msg.orientation_covariance[0] = 0.013*(M_PI/180.0);
+	node->imu_data_msg.orientation_covariance[4] = 0.011*(M_PI/180.0);
+	node->imu_data_msg.orientation_covariance[8] = 0.006*(M_PI/180.0);
 
 
 	rclcpp::WallRate loop_rate(100);
-	iahrs.serial_open();
-	iahrs.SendRecv("za\n", dSend_Data, 10);	// Euler Angle -> '0.0' Reset
+	node->serial_open();
+	node->SendRecv("za\n", dSend_Data, 10);	// Euler Angle -> '0.0' Reset
 	usleep(10000);
 	printf("                       | Z axis \n");
 	printf("                       | \n");
@@ -283,23 +282,23 @@ int main (int argc, char** argv)
 			const int max_data = 10;
 			double data[max_data];
 			int no_data = 0;
-			no_data = iahrs.SendRecv("g\n", data, max_data);	// Read angular_velocity _ wx, wy, wz 
+			no_data = node->SendRecv("g\n", data, max_data);	// Read angular_velocity _ wx, wy, wz 
 			if (no_data >= 3) 
 			{
 				// angular_velocity
-				iahrs.imu_data_msg.angular_velocity.x = _pIMU_data.dAngular_velocity_x = data[0]*(M_PI/180.0);
-				iahrs.imu_data_msg.angular_velocity.y = _pIMU_data.dAngular_velocity_y = data[1]*(M_PI/180.0);
-				iahrs.imu_data_msg.angular_velocity.z = _pIMU_data.dAngular_velocity_z = data[2]*(M_PI/180.0);
+				node->imu_data_msg.angular_velocity.x = _pIMU_data.dAngular_velocity_x = data[0]*(M_PI/180.0);
+				node->imu_data_msg.angular_velocity.y = _pIMU_data.dAngular_velocity_y = data[1]*(M_PI/180.0);
+				node->imu_data_msg.angular_velocity.z = _pIMU_data.dAngular_velocity_z = data[2]*(M_PI/180.0);
 			}
-			no_data = iahrs.SendRecv("a\n", data, max_data);	// Read linear_acceleration 	unit: m/s^2
+			no_data = node->SendRecv("a\n", data, max_data);	// Read linear_acceleration 	unit: m/s^2
 			if (no_data >= 3) 
 			{
 				//// linear_acceleration   g to m/s^2
-				iahrs.imu_data_msg.linear_acceleration.x = _pIMU_data.dLinear_acceleration_x = data[0] * 9.80665;
-				iahrs.imu_data_msg.linear_acceleration.y = _pIMU_data.dLinear_acceleration_y = data[1] * 9.80665;
-				iahrs.imu_data_msg.linear_acceleration.z = _pIMU_data.dLinear_acceleration_z = data[2] * 9.80665;
+				node->imu_data_msg.linear_acceleration.x = _pIMU_data.dLinear_acceleration_x = data[0] * 9.80665;
+				node->imu_data_msg.linear_acceleration.y = _pIMU_data.dLinear_acceleration_y = data[1] * 9.80665;
+				node->imu_data_msg.linear_acceleration.z = _pIMU_data.dLinear_acceleration_z = data[2] * 9.80665;
 			}
-			no_data = iahrs.SendRecv("e\n", data, max_data);	// Read Euler angle
+			no_data = node->SendRecv("e\n", data, max_data);	// Read Euler angle
 			if (no_data >= 3) 
 			{
 				// Euler _ rad
@@ -311,32 +310,32 @@ int main (int argc, char** argv)
 			tf2::Quaternion q;
 			q.setRPY(_pIMU_data.dEuler_angle_Roll , _pIMU_data.dEuler_angle_Pitch, _pIMU_data.dEuler_angle_Yaw);
 			// orientation
-			iahrs.imu_data_msg.orientation.x = q.x();
-			iahrs.imu_data_msg.orientation.y = q.y();
-			iahrs.imu_data_msg.orientation.z = q.z();
-			iahrs.imu_data_msg.orientation.w = q.w();
-			iahrs.imu_data_msg.header.stamp = node->now();
-			iahrs.imu_data_msg.header.frame_id = "imu_link";
+			node->imu_data_msg.orientation.x = q.x();
+			node->imu_data_msg.orientation.y = q.y();
+			node->imu_data_msg.orientation.z = q.z();
+			node->imu_data_msg.orientation.w = q.w();
+			node->imu_data_msg.header.stamp = node->now();
+			node->imu_data_msg.header.frame_id = "imu_link";
 
 			// publish the IMU data
-			iahrs.imu_data_pub->publish(iahrs.imu_data_msg);
+			node->imu_data_pub->publish(node->imu_data_msg);
 
 			if(m_bSingle_TF_option)
 			{
 				// Update the timestamp of the transform
-				iahrs.transformStamped.header.stamp = node->now();
-				iahrs.transformStamped.header.frame_id = "base_link";   // Parent frame ID
-				iahrs.transformStamped.child_frame_id = "imu_link";       // IMU frame ID
+				node->transformStamped.header.stamp = node->now();
+				node->transformStamped.header.frame_id = "base_link";   // Parent frame ID
+				node->transformStamped.child_frame_id = "imu_link";       // IMU frame ID
 				// Set the transformation translation (position)
-				iahrs.transformStamped.transform.translation.x = 0.0;
-				iahrs.transformStamped.transform.translation.y = 0.0;
-				iahrs.transformStamped.transform.translation.z = 0.2;
-				iahrs.transformStamped.transform.rotation.x = q.x();
-				iahrs.transformStamped.transform.rotation.y = q.y();
-				iahrs.transformStamped.transform.rotation.z = q.z();
-				iahrs.transformStamped.transform.rotation.w = q.w();
+				node->transformStamped.transform.translation.x = 0.0;
+				node->transformStamped.transform.translation.y = 0.0;
+				node->transformStamped.transform.translation.z = 0.2;
+				node->transformStamped.transform.rotation.x = q.x();
+				node->transformStamped.transform.rotation.y = q.y();
+				node->transformStamped.transform.rotation.z = q.z();
+				node->transformStamped.transform.rotation.w = q.w();
 				// Publish the transform
-				iahrs.tf_broadcaster->sendTransform(iahrs.transformStamped);
+				node->tf_broadcaster->sendTransform(node->transformStamped);
 			}
 		}
 
