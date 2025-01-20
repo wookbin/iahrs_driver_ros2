@@ -1,5 +1,5 @@
 # iahrs_driver_ros2
-ros2(foxy) iahrs cpp package
+ros2(foxy / humble / jazzy ) iahrs cpp package
 
 ===[Device Setting]====================================
 
