@@ -14,6 +14,7 @@
 #include <iostream>
 #include <dirent.h>
 #include <signal.h>
+#include <atomic>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float64.hpp"
@@ -58,8 +59,14 @@ double dSend_Data[10];
 double m_dRoll, m_dPitch, m_dYaw;
 //single_used TF
 bool m_bSingle_TF_option = true; //false;
-
 using namespace std::chrono_literals;
+
+std::atomic<bool> stop_requested(false);
+void signal_handler(int signal) 
+{
+    stop_requested = true;
+    printf("Signal received: %d. Preparing to shutdown...\n", signal);
+}
 
 //iahrs_driver class define
 class IAHRS : public rclcpp::Node
@@ -245,6 +252,7 @@ private:
 int main (int argc, char** argv)
 {
 	rclcpp::init(argc, argv);
+	std::signal(SIGINT, signal_handler);
 	// Create a function for when messages are to be sent.
 	setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 	auto node = std::make_shared<IAHRS>();
@@ -274,7 +282,7 @@ int main (int argc, char** argv)
 	printf("               /___________ // \n");
 	printf("              |____iahrs___|/ \n");
 
-	while(rclcpp::ok())
+	while(rclcpp::ok() && !stop_requested)
     	{
 		rclcpp::spin_some(node);
 		if (serial_fd >= 0) 
