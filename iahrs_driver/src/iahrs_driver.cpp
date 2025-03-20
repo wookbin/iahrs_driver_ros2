@@ -83,7 +83,7 @@ public:
 		std::bind(&IAHRS::Euler_angle_reset_callback, this, std::placeholders::_1, std::placeholders::_2));
 
 		//PARAM
-		this->declare_parameter("m_bSingle_TF_option");
+		this->declare_parameter("m_bSingle_TF_option", rclcpp::PARAMETER_BOOL);
 		m_bSingle_TF_option_param = this->get_parameter("m_bSingle_TF_option");
 		//Get Param
 		m_bSingle_TF_option = m_bSingle_TF_option_param.as_bool();
