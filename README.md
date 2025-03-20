@@ -46,4 +46,6 @@ udev 재시작 명령어를 호출한 후에 PC의 재 시작을 해주어야 �
 2) interfaces package 먼저 빌드 후에 iahrs_driver package 빌드 후 사용
 3) 서비스는 오일러 각도 초기화 기능만 구현함.
 4) 설명자료 링크: https://blog.naver.com/zzang0736/223204708311
+
+![Image](https://github.com/user-attachments/assets/f2efffa3-83f1-4d46-9404-13cc0d9d0ad1)
    
